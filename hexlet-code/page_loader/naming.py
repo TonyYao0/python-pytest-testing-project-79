@@ -3,19 +3,19 @@ import os
 from urllib.parse import urlparse
 
 def format_name(url):
-    parsed = urlparse(url)
-    path = f"{parsed.netloc}{parsed.path}".rstrip('/')
-    root, ext = os.path.splitext(path)
-    slug = re.sub(r'[^a-zA-Z0-9]', '-', root)
-    
-    if not ext or ext == '.html':
-        return f"{slug}.html"
-    
-    return f"{slug}{ext}"
+    prepared = re.sub(r'^https?://', '', url).rstrip('/')
+    root, _, ext = prepared.rpartition('.')
+
+    if ext.lower() in ['png', 'jpg', 'jpeg']:
+        slug = re.sub(r'[^a-zA-Z0-9]', '-', root)
+        return f"{slug}.{ext}"
+
+    base = re.sub(r'\.html$', '', prepared)
+    slug = re.sub(r'[^a-zA-Z0-9]', '-', base)
+    return f"{slug}.html"
 
 def format_dir_name(url):
-    parsed = urlparse(url)
-    path = f"{parsed.netloc}{parsed.path}".rstrip('/')
-    root, _ = os.path.splitext(path)
-    slug = re.sub(r'[^a-zA-Z0-9]', '-', root)
+    prepared = re.sub(r'^https?://', '', url).rstrip('/')
+    base = re.sub(r'\.html$', '', prepared)
+    slug = re.sub(r'[^a-zA-Z0-9]', '-', base)
     return f"{slug}_files"
