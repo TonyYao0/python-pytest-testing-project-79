@@ -12,3 +12,9 @@ test:
 
 lint:
 	uv run flake8 page_loader
+
+check:
+	uv run pytest
+	uv run flake8 page_loader
+
+.PHONY: install build test lint check package-install
