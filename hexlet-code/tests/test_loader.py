@@ -95,5 +95,4 @@ def test_download(requests_mock, tmp_path):
     external_link = soup.find('link', href="https://cdn2.hexlet.io/assets/menu.css")
     assert external_link is not None, "Внешний CSS должен остаться без изменений"
     
-    # Проверяем, что лишние файлы не создались
     assert not (assets_path / "js-stripe-com-v3.js").exists()
