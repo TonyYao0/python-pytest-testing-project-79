@@ -1,12 +1,12 @@
 import argparse
 import sys
-import os
+from pathlib import Path
 from page_loader.loader import download
 
 def main():
     parser = argparse.ArgumentParser(description='Page loader')
     parser.add_argument('url')
-    parser.add_argument('-o', '--output', default=os.getcwd())
+    parser.add_argument('-o', '--output', default=Path.cwd())
     
     args = parser.parse_args()
     

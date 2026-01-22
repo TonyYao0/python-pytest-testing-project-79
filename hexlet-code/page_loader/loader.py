@@ -1,40 +1,55 @@
-import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from page_loader.naming import format_name, format_dir_name
+from pathlib import Path
+
+RESOURCES_TAGS = {
+    'img': 'src',
+    'link': 'href',
+    'script': 'src'
+}
 
 def download(url, output_path):
+    output_dir = Path(output_path)
     response = requests.get(url)
     response.raise_for_status()
-    
+
     soup = BeautifulSoup(response.text, 'html.parser')
+
     base_domain = urlparse(url).netloc
- 
+
     page_name = format_name(url)
     dir_name = format_dir_name(url)
-    dir_path = os.path.join(output_path, dir_name)
+    dir_path = output_dir / dir_name
 
-    for img in soup.find_all('img'):
-        src = img.get('src')
-        if not src:
-            continue
-            
-        full_url = urljoin(url, src)
-        if urlparse(full_url).netloc == base_domain:
-            os.makedirs(dir_path, exist_ok=True)
+    resources_dir = output_dir / dir_name
+    resources_dir.mkdir(parents=True, exist_ok=True)
 
-            img_name = format_name(full_url)
-            img_res = requests.get(full_url)
-            img_res.raise_for_status()
-            
-            with open(os.path.join(dir_path, img_name), 'wb') as f:
-                f.write(img_res.content)
-            
-            img['src'] = os.path.join(dir_name, img_name)
+    for tag_name, attr in RESOURCES_TAGS.items():
+        for tag in soup.find_all(tag_name):
+            resource_url = tag.get(attr)
+            if not resource_url:
+                continue
 
-    result_path = os.path.join(output_path, page_name)
-    with open(result_path, 'w', encoding='utf-8') as f:
-        f.write(soup.prettify())
-        
-    return result_path
+            full_url = urljoin(url, resource_url)
+
+            if urlparse(full_url).netloc == base_domain:
+                resource_name = format_name(full_url)
+                resource_path = dir_path / resource_name
+
+                try:
+                    res_response = requests.get(full_url)
+                    res_response.raise_for_status()
+                    resource_path.write_bytes(res_response.content)
+                    tag[attr] = f"{dir_name}/{resource_name}"
+                except requests.RequestException as e:
+                    print(f"Error downloading {full_url}: {e}")
+                    continue
+
+                tag[attr] = f"{dir_name}/{resource_name}"
+
+    result_html_path = output_dir / page_name
+    result_html_path.write_text(soup.prettify(), encoding='utf-8')
+
+    return result_html_path
