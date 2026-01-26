@@ -30,6 +30,12 @@ jobs:
       - name: Run tests and collect coverage
         run: make test-coverage
 
+      - name: Prepare Code Climate Reporter
+        run: |
+          curl -L https://github.com > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
+          ./cc-test-reporter before-build
+
       - name: Publish code coverage
         uses: paambaati/codeclimate-action@v9.0.0
         env:
