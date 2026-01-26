@@ -27,11 +27,14 @@ jobs:
       - name: Run linter
         run: make lint
 
-      - name: Test & publish code coverage
+      - name: Run tests and collect coverage
+        run: make test-coverage
+
+      - name: Publish code coverage
         uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
-          workingDirectory: hexlet-code
-          coverageCommand: make test-coverage
+          coverageLocations: |
+            ${{ github.workspace }}/hexlet-code/coverage.xml:pycoverage
           debug: true
