@@ -1,5 +1,5 @@
 import re
-from urllib.parse import urlparse
+
 
 extension = ['png', 'jpg', 'jpeg', 'js','css']
 

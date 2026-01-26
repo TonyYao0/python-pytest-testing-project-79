@@ -6,6 +6,8 @@ from page_loader.naming import format_name, format_dir_name
     ("ru.hexlet.io.courses", "ru-hexlet-io-courses.html"),
     ("ru.hexlet.io.courses.html", "ru-hexlet-io-courses.html"),
     ("https://ru.hexlet.io.assets.professions.python.png", "ru-hexlet-io-assets-professions-python.png"),
+    ("https://ru.hexlet.io.assets.professions.menu.css", "ru-hexlet-io-assets-professions-menu.css"),
+    ("https://ru.hexlet.io.assets.professions.runtime.png", "ru-hexlet-io-assets-professions-runtime.png"),
     ("ru.hexlet.io", "ru-hexlet-io.html"),
     ("ru.hexlet.io.courses/", "ru-hexlet-io-courses.html"),
 ])

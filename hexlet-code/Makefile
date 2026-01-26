@@ -9,6 +9,7 @@ package-install:
 
 test:
 	uv run pytest
+	uv run pytest --cov=page_loader
 
 lint:
 	uv run flake8 page_loader
