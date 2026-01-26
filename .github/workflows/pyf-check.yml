@@ -7,9 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: hexlet-code
 
     steps:
       - uses: actions/checkout@v4
@@ -20,27 +17,25 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
+        working-directory: hexlet-code
         run: |
           pip install uv
           make install
 
       - name: Run linter
+        working-directory: hexlet-code
         run: make lint
 
       - name: Run tests and collect coverage
+        working-directory: hexlet-code
         run: make test-coverage
-
-      - name: Prepare Code Climate Reporter
-        run: |
-          curl -L https://github.com > ./cc-test-reporter
-          chmod +x ./cc-test-reporter
-          ./cc-test-reporter before-build
 
       - name: Publish code coverage
         uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
+          downloadUrl: https://github.com
           coverageLocations: |
             ${{ github.workspace }}/hexlet-code/coverage.xml:pycoverage
           debug: true
