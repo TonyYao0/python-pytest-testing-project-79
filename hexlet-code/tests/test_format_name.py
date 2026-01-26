@@ -22,4 +22,3 @@ def test_format_name(url, expected_name):
 
 def test_format_dir_name(url, expected_dir):
     assert format_dir_name(url) == expected_dir
-

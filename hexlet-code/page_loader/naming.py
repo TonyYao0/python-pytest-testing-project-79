@@ -1,7 +1,8 @@
 import re
 
 
-extension = ['png', 'jpg', 'jpeg', 'js','css']
+extension = ['png', 'jpg', 'jpeg', 'js', 'css']
+
 
 def format_name(url):
     prepared = re.sub(r'^https?://', '', url).rstrip('/')
@@ -14,6 +15,7 @@ def format_name(url):
     base = re.sub(r'\.html$', '', prepared)
     slug = re.sub(r'[^a-zA-Z0-9]', '-', base)
     return f"{slug}.html"
+
 
 def format_dir_name(url):
     prepared = re.sub(r'^https?://', '', url).rstrip('/')

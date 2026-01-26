@@ -12,6 +12,7 @@ RESOURCES_TAGS = {
     'script': 'src'
 }
 
+
 def download(url, output_path):
     logger.info(f"Requested URL: {url}")
     logger.info(f"Output path: {output_path}")
@@ -25,7 +26,7 @@ def download(url, output_path):
 
     page_name = format_name(url)
     dir_name = format_dir_name(url)
-    dir_path = output_dir / dir_name 
+    dir_path = output_dir / dir_name
 
     dir_path.mkdir(parents=True, exist_ok=True)
 
@@ -35,23 +36,23 @@ def download(url, output_path):
             if not resource_url:
                 continue
 
-            full_url = urljoin(url, resource_url) 
+            full_url = urljoin(url, resource_url)
 
-            if urlparse(full_url).netloc == base_domain: 
+            if urlparse(full_url).netloc == base_domain:
                 resource_name = format_name(full_url)
                 resource_path = dir_path / resource_name
-                
+
                 local_resource_link = f"{dir_name}/{resource_name}"
 
                 if resource_path.exists():
-                    logger.info(f"Resource '{resource_name}' already exists, skipping download")
+                    logger.info(f"Resource '{resource_name}' saved")
                     tag[attr] = local_resource_link
                     continue
 
                 try:
                     res_response = requests.get(full_url)
                     res_response.raise_for_status()
-                    
+
                     resource_path.write_bytes(res_response.content)
                     tag[attr] = local_resource_link
                     logger.info(f"Resource '{resource_name}' saved")
