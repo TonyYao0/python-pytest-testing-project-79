@@ -26,21 +26,6 @@ jobs:
         working-directory: hexlet-code
         run: make lint
 
-      - name: Run tests and collect coverage
+      - name: Run tests
         working-directory: hexlet-code
-        run: make test-coverage
-
-      - name: Publish code coverage
-        run: |
-          curl -L https://github.com > ./cc-test-reporter
-          chmod +x ./cc-test-reporter
-          ./cc-test-reporter before-build
-        
-      - name: Upload coverage to Code Climate
-        uses: paambaati/codeclimate-action@v9.0.0
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        with:
-          coverageLocations: |
-            ${{ github.workspace }}/hexlet-code/coverage.xml:pycoverage
-          debug: true
+        run: make test
