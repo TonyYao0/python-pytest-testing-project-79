@@ -17,15 +17,21 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        working-directory: hexlet-code
         run: |
           pip install uv
           make install
 
       - name: Run linter
-        working-directory: hexlet-code
         run: make lint
 
-      - name: Run tests
-        working-directory: hexlet-code
-        run: make test
+      - name: Run tests and collect coverage
+        run: make test-coverage
+
+      - name: Publish code coverage
+        uses: paambaati/codeclimate-action@v9.0.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageLocations: |
+            ${{ github.workspace }}/coverage.xml:pycoverage
+          debug: true
