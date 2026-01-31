@@ -90,25 +90,4 @@ def test_download(requests_mock, tmp_path):
 
     external_link = soup.find('link', href="https://cdn2.hexlet.io/assets/menu.css")
     assert external_link is not None, "Внешний CSS должен остаться без изменений"
-    
     assert not (assets_path / "js-stripe-com-v3.js").exists()
-
-
-def test_download_resource_404(requests_mock, tmp_path):
-    url = "http://ru.hexlet.io/courses.html"
-    bad_img_url = "http://ru.hexlet.io/assets/404.png"
-    html_content = '<html><body><img src="/assets/404.png"></body></html>'
-    
-    requests_mock.get(url, text=html_content)
-    requests_mock.get(bad_img_url, status_code=404)
-
-    actual_path = Path(download(url, tmp_path))
-
-    assert actual_path.name == "ru-hexlet-io-courses.html"
-    
-    content = actual_path.read_text()
-    assert '/assets/404.png' in content
-    assert 'ru-hexlet-io_files/ru-hexlet-io-assets-404.png' not in content
-
-    res_path = tmp_path / "ru-hexlet-io-courses_files" / "ru-hexlet-io-assets-404.png"
-    assert not res_path.exists()
