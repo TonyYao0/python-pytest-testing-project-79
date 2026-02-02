@@ -32,9 +32,8 @@ def test_download_directory_not_found(requests_mock):
 def test_download_permission_denied(requests_mock, tmp_path):
     url = "http://ru.hexlet.io/courses.html"
     requests_mock.get(url, text="content")
-    tmp_path.chmod(0o444)
     with pytest.raises(PermissionError):
-        download(url, str(tmp_path))
+        download(url, "/sys")
 
 def test_download_connection_error(requests_mock, tmp_path):
     url = "https://non-existent-site.com"
