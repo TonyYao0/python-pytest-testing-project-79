@@ -41,6 +41,7 @@ def test_download_404_error(requests_mock, tmp_path):
     requests_mock.get(url, status_code=404)
     with pytest.raises(requests.exceptions.HTTPError):
         download(url, tmp_path)
+    assert not any(Path(tmp_path).iterdir())
 
 
 def test_download_network_error(requests_mock, tmp_path):
@@ -109,3 +110,16 @@ def test_download_duplicate_resources(requests_mock, tmp_path):
     requests_mock.get(img_url, text="data")
     download(url, tmp_path)
     assert requests_mock.call_count == 2
+
+def test_download_protocol_relative_links(requests_mock, tmp_path):
+    main_url = 'https://site.com'
+    relative_js_path = '//site.com/script.js'
+    full_js_url = 'https://site.com/script.js'
+    html_content = f'<html><script src="{relative_js_path}"></script></html>'
+    requests_mock.get(main_url, text=html_content)
+    requests_mock.get(full_js_url, text="console.log('hello')")
+    download(main_url, tmp_path)
+    res_dir = Path(tmp_path) / "site-com_files"
+    expected_js_file = res_dir / "site-com-script.js"
+    assert expected_js_file.exists(), f"Файл {expected_js_file} не был скачан"
+    assert "hello" in expected_js_file.read_text()
