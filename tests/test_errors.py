@@ -29,7 +29,7 @@ def test_download_directory_not_found(requests_mock):
     with pytest.raises((FileNotFoundError, PermissionError)):
         download(url, "/non/existing/path")
 
-def test_download_permission_denied(requests_mock, tmp_path):
+def test_download_permission_denied(requests_mock):
     url = "http://ru.hexlet.io/courses.html"
     requests_mock.get(url, text="content")
     with pytest.raises(PermissionError):
