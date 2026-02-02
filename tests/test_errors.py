@@ -19,8 +19,10 @@ def test_download_resource_404(requests_mock, tmp_path, caplog):
 
     with caplog.at_level("WARNING"):
         actual_path = Path(download(url, tmp_path))
-    warnings = [record for record in caplog.records if record.levelname == "WARNING"]
-    assert len(warnings) >= 1
+
+    assert any(record.levelname == 'WARNING' and '404' in record.message 
+        for record in caplog.records)
+    
     assert "404" in caplog.text
     assert "404.png" in caplog.text
 
@@ -28,6 +30,7 @@ def test_download_resource_404(requests_mock, tmp_path, caplog):
     content = actual_path.read_text()
     assert '/assets/404.png' in content
     assert 'ru-hexlet-io-courses_files/ru-hexlet-io-assets-404.png' not in content
+    
     res_dir = tmp_path / "ru-hexlet-io-courses_files"
     assert not (res_dir / "ru-hexlet-io-assets-404.png").exists()
     assert (res_dir / "ru-hexlet-io-assets-good.png").exists()
