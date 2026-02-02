@@ -11,8 +11,7 @@ lint:
 	uv run flake8 page_loader
 
 test:
-	uv run pytest
-	uv run pytest --cov=page_loader
+	uv run pytest -vv
 
 test-coverage:
 	uv run pytest --cov=page_loader --cov-report xml
