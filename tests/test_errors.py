@@ -19,7 +19,8 @@ def test_download_resource_404(requests_mock, tmp_path, caplog):
 
     with caplog.at_level("WARNING"):
         actual_path = Path(download(url, tmp_path))
-
+    warnings = [record for record in caplog.records if record.levelname == "WARNING"]
+    assert len(warnings) >= 1
     assert "404" in caplog.text
     assert "404.png" in caplog.text
 
