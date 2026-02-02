@@ -5,10 +5,13 @@ import requests_mock
 from bs4 import BeautifulSoup
 import difflib
 
-FIXTURES_PATH = Path('tests/fixtures')
+#FIXTURES_PATH = Path('tests/fixtures')
 
+
+#def get_fixture_path(name):
+#    return FIXTURES_PATH / name
 def get_fixture_path(name):
-    return FIXTURES_PATH / name
+    return Path(__file__).parent / 'fixtures' / name
 
 def read_fixture(name, binary=False):
     path = get_fixture_path(name)

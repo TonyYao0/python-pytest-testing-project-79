@@ -4,6 +4,8 @@ from urllib.parse import urljoin, urlparse
 from page_loader.naming import format_name, format_dir_name
 from pathlib import Path
 import logging
+
+
 logger = logging.getLogger(__name__)
 
 RESOURCES_TAGS = {
