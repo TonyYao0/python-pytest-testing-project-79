@@ -3,16 +3,27 @@ import requests
 from pathlib import Path
 from page_loader import download
 
-def test_download_resource_404(requests_mock, tmp_path):
+def test_download_resource_404(requests_mock, tmp_path, caplog):
     url = "http://ru.hexlet.io/courses.html"
     bad_img_url = "http://ru.hexlet.io/assets/404.png"
-    html_content = '<html><body><img src="/assets/404.png"></body></html>'
+    good_img_url = "http://ru.hexlet.io/assets/good.png"
+    html_content = (
+        '<html><body>'
+        '<img src="/assets/404.png">'
+        '<img src="/assets/good.png">'
+        '</body></html>'
+    )
     requests_mock.get(url, text=html_content)
     requests_mock.get(bad_img_url, status_code=404)
+    requests_mock.get(good_img_url, text=html_content)
+    
     actual_path = Path(download(url, tmp_path))
+
+    assert "404" in caplog.text
     assert actual_path.name == "ru-hexlet-io-courses.html"
     content = actual_path.read_text()
     assert '/assets/404.png' in content
+    assert 'ru-hexlet-io-courses_files/ru-hexlet-io-assets-good.png' in content
     assert 'ru-hexlet-io_files/ru-hexlet-io-assets-404.png' not in content
     res_path = tmp_path / "ru-hexlet-io-courses_files" / "ru-hexlet-io-assets-404.png"
     assert not res_path.exists()
