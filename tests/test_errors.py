@@ -33,6 +33,8 @@ def test_download_network_error(requests_mock, tmp_path):
     requests_mock.get(url, status_code=404)
     with pytest.raises(requests.exceptions.HTTPError):
         download(url, tmp_path)
+    assert not any(Path(tmp_path).iterdir()), "Directory should be empty"
+
 
 def test_download_directory_not_found(requests_mock):
     url = "http://ru.hexlet.io/courses.html"
@@ -40,11 +42,12 @@ def test_download_directory_not_found(requests_mock):
     with pytest.raises((FileNotFoundError, PermissionError)):
         download(url, "/non/existing/path")
 
-def test_download_permission_denied(requests_mock):
+def test_download_permission_denied(requests_mock, tmp_path):
     url = "http://ru.hexlet.io/courses.html"
     requests_mock.get(url, text="content")
     with pytest.raises((PermissionError, OSError)):
         download(url, "/sys")
+    assert not any(Path(tmp_path).iterdir()), "Directory should be empty"
 
 
 def test_download_connection_error(requests_mock, tmp_path):
@@ -52,3 +55,4 @@ def test_download_connection_error(requests_mock, tmp_path):
     requests_mock.get(url, exc=requests.exceptions.ConnectionError)
     with pytest.raises(requests.exceptions.ConnectionError):
         download(url, tmp_path)
+    assert not any(Path(tmp_path).iterdir()), "Directory should be empty"
