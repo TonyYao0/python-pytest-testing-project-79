@@ -14,10 +14,13 @@ RESOURCES_TAGS = {
 
 
 def download(url, output_path):
+
     logger.info(f"Requested URL: {url}")
     logger.info(f"Output path: {output_path}")
 
     output_dir = Path(output_path)
+    if not output_dir.exists() or not output_dir.is_dir():
+        raise FileNotFoundError(f"Directory not found: {output_path}")
     response = requests.get(url)
     response.raise_for_status()
 
@@ -28,7 +31,7 @@ def download(url, output_path):
     dir_name = format_dir_name(url)
     dir_path = output_dir / dir_name
 
-    dir_path.mkdir(parents=True, exist_ok=True)
+    dir_path.mkdir(exist_ok=True)
 
     for tag_name, attr in RESOURCES_TAGS.items():
         for tag in soup.find_all(tag_name):
