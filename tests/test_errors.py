@@ -36,6 +36,11 @@ def test_download_resource_404(requests_mock, tmp_path, caplog):
     assert (res_dir / "ru-hexlet-io-assets-good.png").exists()
     assert len(list(res_dir.iterdir())) == 1
 
+def test_download_404_error(requests_mock, tmp_path):
+    url = 'http://example.com/somepage'
+    requests_mock.get(url, status_code=404)
+    with pytest.raises(requests.exceptions.HTTPError):
+        download(url, tmp_path)
 
 
 def test_download_network_error(requests_mock, tmp_path):
@@ -69,7 +74,7 @@ def test_download_connection_error(requests_mock, tmp_path):
 
 def test_download_empty_html(requests_mock, tmp_path):
     url = "https://example.com/empty"
-    requests_mock.get(url, text="")  # Пустой ответ
+    requests_mock.get(url, text="") 
     
     actual_path = Path(download(url, tmp_path))
     assert actual_path.exists()
@@ -92,7 +97,6 @@ def test_download_external_resources(requests_mock, tmp_path):
     external_url = "https://cdn.com"
     html = f'<html><link href="{external_url}"></html>'
     requests_mock.get(url, text=html)
-    # Мы НЕ мокаем external_url. Если библиотека пойдет туда — requests_mock выдаст ошибку.
     actual_path = Path(download(url, tmp_path))
     content = actual_path.read_text()
     assert external_url in content
@@ -104,5 +108,4 @@ def test_download_duplicate_resources(requests_mock, tmp_path):
     requests_mock.get(url, text=html)
     requests_mock.get(img_url, text="data")
     download(url, tmp_path)
-    # Проверяем, что запрос к картинке был сделан ровно 1 раз
     assert requests_mock.call_count == 2
