@@ -67,4 +67,4 @@ def download(url, output_path):
     result_html_path.write_text(soup.prettify(), encoding='utf-8')
     logger.info(f"Page saved to {result_html_path}")
 
-    return result_html_path
+    return str(result_html_path)
