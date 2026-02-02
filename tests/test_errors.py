@@ -30,7 +30,7 @@ def test_download_resource_404(requests_mock, tmp_path, caplog):
     content = actual_path.read_text()
     assert '/assets/404.png' in content
     assert 'ru-hexlet-io-courses_files/ru-hexlet-io-assets-404.png' not in content
-    
+
     res_dir = tmp_path / "ru-hexlet-io-courses_files"
     assert not (res_dir / "ru-hexlet-io-assets-404.png").exists()
     assert (res_dir / "ru-hexlet-io-assets-good.png").exists()
@@ -65,3 +65,43 @@ def test_download_connection_error(requests_mock, tmp_path):
     with pytest.raises(requests.exceptions.ConnectionError):
         download(url, tmp_path)
     assert not any(Path(tmp_path).iterdir())
+
+def test_download_empty_html(requests_mock, tmp_path):
+    url = "https://example.com/empty"
+    requests_mock.get(url, text="")  # Пустой ответ
+    
+    actual_path = Path(download(url, tmp_path))
+    assert actual_path.exists()
+    assert actual_path.read_text() == ""
+
+
+def test_download_tags_without_src(requests_mock, tmp_path):
+    url = "https://example.com/no-src"
+    html = '<html><body><img src="/valid.png"><img><script></script></body></html>'
+    
+    requests_mock.get(url, text=html)
+    requests_mock.get("https://example.com/valid.png", text="png")
+    
+    actual_path = Path(download(url, tmp_path))
+    assert actual_path.exists()
+
+
+def test_download_external_resources(requests_mock, tmp_path):
+    url = "https://site.com"
+    external_url = "https://cdn.com"
+    html = f'<html><link href="{external_url}"></html>'
+    requests_mock.get(url, text=html)
+    # Мы НЕ мокаем external_url. Если библиотека пойдет туда — requests_mock выдаст ошибку.
+    actual_path = Path(download(url, tmp_path))
+    content = actual_path.read_text()
+    assert external_url in content
+
+def test_download_duplicate_resources(requests_mock, tmp_path):
+    url = "https://site.com"
+    img_url = "https://site.com/image.png"
+    html = '<html><img src="/image.png"><img src="/image.png"></html>'
+    requests_mock.get(url, text=html)
+    requests_mock.get(img_url, text="data")
+    download(url, tmp_path)
+    # Проверяем, что запрос к картинке был сделан ровно 1 раз
+    assert requests_mock.call_count == 2
