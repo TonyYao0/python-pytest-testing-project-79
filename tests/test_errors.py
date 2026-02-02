@@ -26,7 +26,7 @@ def test_download_resource_404(requests_mock, tmp_path, caplog):
     assert actual_path.name == "ru-hexlet-io-courses.html"
     content = actual_path.read_text()
     assert '/assets/404.png' in content
-
+    assert 'ru-hexlet-io-courses_files/ru-hexlet-io-assets-404.png' not in content
     res_dir = tmp_path / "ru-hexlet-io-courses_files"
     assert not (res_dir / "ru-hexlet-io-assets-404.png").exists()
     assert (res_dir / "ru-hexlet-io-assets-good.png").exists()
@@ -38,7 +38,7 @@ def test_download_network_error(requests_mock, tmp_path):
     requests_mock.get(url, status_code=404)
     with pytest.raises(requests.exceptions.HTTPError):
         download(url, tmp_path)
-    assert not any(Path(tmp_path).iterdir()), "Directory should be empty"
+    assert not any(Path(tmp_path).iterdir())
 
 
 def test_download_directory_not_found(requests_mock):
@@ -46,6 +46,7 @@ def test_download_directory_not_found(requests_mock):
     requests_mock.get(url, text="content")
     with pytest.raises((FileNotFoundError, PermissionError)):
         download(url, "/non/existing/path")
+
 
 def test_download_permission_denied(requests_mock):
     url = "http://ru.hexlet.io/courses.html"
@@ -59,4 +60,4 @@ def test_download_connection_error(requests_mock, tmp_path):
     requests_mock.get(url, exc=requests.exceptions.ConnectionError)
     with pytest.raises(requests.exceptions.ConnectionError):
         download(url, tmp_path)
-    assert not any(Path(tmp_path).iterdir()), "Directory should be empty"
+    assert not any(Path(tmp_path).iterdir())
