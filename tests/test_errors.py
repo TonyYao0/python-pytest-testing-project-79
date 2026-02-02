@@ -29,7 +29,7 @@ def test_download_resource_404(requests_mock, tmp_path, caplog):
     assert not res_path.exists()
 
 def test_download_network_error(requests_mock, tmp_path):
-    url = "https://httpbin.org"
+    url = "https://httpbin.org/status/404"
     requests_mock.get(url, status_code=404)
     with pytest.raises(requests.exceptions.HTTPError):
         download(url, tmp_path)
