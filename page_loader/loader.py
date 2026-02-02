@@ -56,8 +56,10 @@ def download(url, output_path):
 
                 try:
                     res_response = requests.get(full_url)
+                    if res_response.status_code == 404:
+                        logger.warning(f"Resource not found: {full_url}")
+                        continue
                     res_response.raise_for_status()
-
                     resource_path.write_bytes(res_response.content)
                     tag[attr] = local_resource_link
                     logger.info(f"Resource '{resource_name}' saved")

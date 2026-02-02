@@ -37,6 +37,7 @@ def test_download_resource_404(requests_mock, tmp_path, caplog):
     assert len(list(res_dir.iterdir())) == 1
 
 
+
 def test_download_network_error(requests_mock, tmp_path):
     url = "https://httpbin.org/status/404"
     requests_mock.get(url, status_code=404)
