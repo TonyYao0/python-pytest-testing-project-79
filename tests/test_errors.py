@@ -36,12 +36,25 @@ def test_download_resource_404(requests_mock, tmp_path, caplog):
     assert (res_dir / "ru-hexlet-io-assets-good.png").exists()
     assert len(list(res_dir.iterdir())) == 1
 
+
 def test_download_404_error(requests_mock, tmp_path):
-    url = 'http://example.com/somepage'
+    url = 'http://example.com/404'
     requests_mock.get(url, status_code=404)
-    with pytest.raises(requests.exceptions.HTTPError):
+    with pytest.raises(requests.exceptions.HTTPError) as excinfo:
         download(url, tmp_path)
+    assert excinfo.value.response.status_code == 404
+    items = list(tmp_path.glob('*'))
+    assert len(items) == 0, f"Expected no files, but found: {items}"
     assert not any(Path(tmp_path).iterdir())
+
+
+def test_download_500_error(requests_mock, tmp_path):
+    url = 'http://example.com/server-error'
+    requests_mock.get(url, status_code=500)
+    with pytest.raises(requests.exceptions.HTTPError) as excinfo:
+        download(url, tmp_path)
+    assert excinfo.value.response.status_code == 500
+    assert not list(tmp_path.iterdir())
 
 
 def test_download_network_error(requests_mock, tmp_path):

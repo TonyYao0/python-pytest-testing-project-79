@@ -6,9 +6,9 @@ extension = ['png', 'jpg', 'jpeg', 'js', 'css']
 
 def format_name(url):
     prepared = re.sub(r'^https?://', '', url).rstrip('/')
-    root, _, ext = prepared.rpartition('.')
+    root, sep, ext = prepared.rpartition('.')
 
-    if ext.lower() in extension:
+    if sep and ext.lower() in extension:
         slug = re.sub(r'[^a-zA-Z0-9]', '-', root)
         return f"{slug}.{ext}"
 
