@@ -5,11 +5,7 @@ import requests_mock
 from bs4 import BeautifulSoup
 import difflib
 
-#FIXTURES_PATH = Path('tests/fixtures')
 
-
-#def get_fixture_path(name):
-#    return FIXTURES_PATH / name
 def get_fixture_path(name):
     return Path(__file__).parent / 'fixtures' / name
 
@@ -76,7 +72,9 @@ def test_download(requests_mock, tmp_path):
 
     for file_name in expected_files:
         file_path = assets_path / file_name
-        assert file_path.exists(), f"Файл {file_name} не найден в {assets_dir_name}"
+        assert file_path.exists(), (
+            f"Файл {file_name} не найден в {assets_dir_name}"
+        )
         
 
         if file_name.endswith('.png'):

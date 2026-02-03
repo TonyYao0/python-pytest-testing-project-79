@@ -30,7 +30,9 @@ def test_download_resource_404(requests_mock, tmp_path, caplog):
     assert actual_path.name == "ru-hexlet-io-courses.html"
     content = actual_path.read_text()
     assert '/assets/404.png' in content
-    assert 'ru-hexlet-io-courses_files/ru-hexlet-io-assets-404.png' not in content
+    assert (
+        'ru-hexlet-io-courses_files/ru-hexlet-io-assets-404.png' not in content
+    )
 
     res_dir = tmp_path / "ru-hexlet-io-courses_files"
     assert not (res_dir / "ru-hexlet-io-assets-404.png").exists()
@@ -117,7 +119,10 @@ def test_download_empty_html(requests_mock, tmp_path):
 
 def test_download_tags_without_src(requests_mock, tmp_path):
     url = "https://example.com/no-src"
-    html = '<html><body><img src="/valid.png"><img><script></script></body></html>'
+    html = (
+        '<html><body><img src="/valid.png">'
+        '<img><script></script></body></html>'
+        )
     
     requests_mock.get(url, text=html)
     requests_mock.get("https://example.com/valid.png", text="png")
