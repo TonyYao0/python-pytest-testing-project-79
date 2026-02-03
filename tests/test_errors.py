@@ -2,6 +2,7 @@ import pytest
 import requests
 from pathlib import Path
 from page_loader import download
+import subprocess
 
 def test_download_resource_404(requests_mock, tmp_path, caplog):
     url = "http://ru.hexlet.io/courses.html"
@@ -56,6 +57,25 @@ def test_download_500_error(requests_mock, tmp_path):
     assert excinfo.value.response.status_code == 500
     assert not list(tmp_path.iterdir())
 
+
+def test_cli_404_error(tmp_path):
+    url = "https://httpbin.org/status/404"
+    result = subprocess.run(
+        ['page-loader', '--output', str(tmp_path), url],
+        capture_output=True,
+        text=True
+    )
+    assert result.returncode == 1
+    assert len(result.stderr) > 0
+    assert "404" in result.stderr or "Network error" in result.stderr
+
+def test_no_empty_dir_on_fail(requests_mock, tmp_path):
+    url = "https://site.com"
+    requests_mock.get(url, status_code=500)
+    with pytest.raises(Exception):
+        download(url, tmp_path)
+    items = [x.name for x in tmp_path.iterdir()]
+    assert not any(item.endswith('_files') for item in items)
 
 def test_download_network_error(requests_mock, tmp_path):
     url = "https://httpbin.org/status/404"
